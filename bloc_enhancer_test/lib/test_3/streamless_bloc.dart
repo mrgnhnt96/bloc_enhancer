@@ -15,6 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-export 'test_1/test_1.dart';
-export 'test_2/test_2.dart';
-export 'test_3/test_3.dart';
+import 'package:streamless_bloc/bloc.dart';
+
+part 'streamless_bloc.g.dart';
+part 'streamless_event.dart';
+part 'streamless_state.dart';
+
+class StreamlessCounterBloc extends Bloc<StreamlessEvent, StreamlessState> {
+  StreamlessCounterBloc() : super(_Initial()) {
+    on<_Increment>((event, emit) {
+      final count = switch (state) {
+        _Ready(:final count) => count + 1,
+        _ => 1,
+      };
+      emit(_Ready(count: count));
+    });
+  }
+}

@@ -15,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 // --- LICENSE ---
-export 'test_1/test_1.dart';
-export 'test_2/test_2.dart';
-export 'test_3/test_3.dart';
+part of 'streamless_bloc.dart';
+
+class StreamlessEvent {}
+
+class _Increment extends StreamlessEvent {}

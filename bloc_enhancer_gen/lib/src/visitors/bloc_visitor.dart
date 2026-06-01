@@ -34,7 +34,7 @@ class BlocVisitor extends RecursiveElementVisitor2<void> {
 
   @override
   void visitClassElement(ClassElement element) {
-    if (!blocChecker.isAssignableFromType(element.thisType)) {
+    if (!isSupportedBlocType(element.thisType)) {
       return;
     }
 
@@ -61,9 +61,7 @@ class BlocVisitor extends RecursiveElementVisitor2<void> {
     }
 
     // get the event and state from the extended clause
-    final typeArgs = element.allSupertypes
-        .firstWhere((e) => e.element.name == 'Bloc')
-        .typeArguments;
+    final typeArgs = findBlocSupertype(element.thisType).typeArguments;
     if (typeArgs.length != 2) {
       throw Exception('Bloc must have 2 type arguments');
     }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:_/lib.dart';
 import 'package:test/test.dart';
 
@@ -96,4 +98,37 @@ void main() {
       },
     );
   });
+
+  group('$StreamlessCounterBloc (streamless_bloc)', () {
+    test('generates events extension and state type checks', () async {
+      final bloc = StreamlessCounterBloc();
+      final state = bloc.state;
+
+      expect(state.isInitial, isTrue);
+      expect(state.isReady, isFalse);
+
+      bloc.events.increment();
+
+      final readyState = await _waitForReadyState(bloc);
+      expect(readyState.isReady, isTrue);
+      expect(readyState.asReady.count, equals(1));
+    });
+  });
+}
+
+Future<StreamlessState> _waitForReadyState(StreamlessCounterBloc bloc) {
+  if (bloc.state.isReady) {
+    return Future.value(bloc.state);
+  }
+
+  final completer = Completer<StreamlessState>();
+  void listener(StreamlessState state) {
+    if (state.isReady) {
+      bloc.removeListener(listener);
+      completer.complete(state);
+    }
+  }
+
+  bloc.addListener(listener);
+  return completer.future;
 }

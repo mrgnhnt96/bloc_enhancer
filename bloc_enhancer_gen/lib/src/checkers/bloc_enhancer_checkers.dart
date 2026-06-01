@@ -16,15 +16,41 @@ limitations under the License.
 */
 // --- LICENSE ---
 
-import 'package:bloc/bloc.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:bloc_enhancer/bloc_enhancer.dart';
 import 'package:source_gen/source_gen.dart' show TypeChecker;
 
-final TypeChecker blocChecker = TypeChecker.typeNamed(
-  Bloc,
-  inPackage: 'bloc',
-  inSdk: false,
-);
+const _supportedBlocPackages = {'bloc', 'streamless_bloc'};
+
+bool isBlocSupertype(InterfaceType supertype) {
+  if (supertype.element.name != 'Bloc') {
+    return false;
+  }
+  if (supertype.typeArguments.length != 2) {
+    return false;
+  }
+
+  final uri = supertype.element.library.uri.toString();
+  return _supportedBlocPackages.any(
+    (packageName) => uri.startsWith('package:$packageName/'),
+  );
+}
+
+bool isSupportedBlocType(DartType type) {
+  if (type is! InterfaceType) {
+    return false;
+  }
+
+  return type.allSupertypes.any(isBlocSupertype);
+}
+
+InterfaceType findBlocSupertype(DartType type) {
+  if (type is! InterfaceType) {
+    throw StateError('Expected a class type extending Bloc');
+  }
+
+  return type.allSupertypes.firstWhere(isBlocSupertype);
+}
 
 final TypeChecker enhanceChecker = TypeChecker.typeNamed(
   Enhance,
