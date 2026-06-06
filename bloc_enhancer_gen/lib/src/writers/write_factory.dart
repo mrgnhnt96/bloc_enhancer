@@ -94,9 +94,9 @@ class WriteFactory {
           ..name = parameterName(p)
           ..named = p.isNamed
           ..defaultTo = switch (p.defaultValueCode) {
-              final code? => Code(code),
-              _ => null,
-            }
+            final code? => Code(code),
+            _ => null,
+          }
           ..type = parameterTypeReference(p, inScopeTypeParams: inScopeNames);
 
         if (isRequired != null) {
@@ -105,9 +105,7 @@ class WriteFactory {
       });
     }
 
-    final typeArgs = [
-      for (final tp in classTypeParams) refer(tp.name ?? ''),
-    ];
+    final typeArgs = [for (final tp in classTypeParams) refer(tp.name ?? '')];
 
     for (final ctor in element.element.constructors) {
       final shouldIgnore = ignoreChecker.hasAnnotationOfExact(
@@ -139,9 +137,11 @@ class WriteFactory {
 
       final returnType = classTypeParams.isEmpty
           ? refer(className)
-          : TypeReference((b) => b
-              ..symbol = className
-              ..types.addAll(typeArgs));
+          : TypeReference(
+              (b) => b
+                ..symbol = className
+                ..types.addAll(typeArgs),
+            );
 
       yield Method(
         (b) => b

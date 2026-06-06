@@ -101,9 +101,9 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
           ..name = p.name ?? ''
           ..named = p.isNamed
           ..defaultTo = switch (p.defaultValueCode) {
-              final code? => Code(code),
-              _ => null,
-            }
+            final code? => Code(code),
+            _ => null,
+          }
           ..type = typeToReference(p.type, inScopeTypeParams: inScopeNames);
 
         if (isRequired != null) {
@@ -122,9 +122,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     }
     usedNames[name] = (usedNames[name] ?? 0) + 1;
 
-    final typeArgs = [
-      for (final tp in classTypeParams) refer(tp.name ?? ''),
-    ];
+    final typeArgs = [for (final tp in classTypeParams) refer(tp.name ?? '')];
 
     final namedConstructorName = switch (ctor.name) {
       '_' || 'new' || null => null,
@@ -134,9 +132,7 @@ List<Method> _writeEventMethod(EventElement event, Map<String, int> usedNames) {
     final method = Method.returnsVoid(
       (b) => b
         ..name = name
-        ..types.addAll(
-          classTypeParams.map(typeParameterToReference),
-        )
+        ..types.addAll(classTypeParams.map(typeParameterToReference))
         ..requiredParameters.addAll(
           ctor.formalParameters.where((p) => p.isRequiredPositional).map(param),
         )

@@ -1,3 +1,10 @@
+# 0.9.2 | 6.6.2026
+
+## Fixes
+
+- Resolve super formal parameter types when the super constructor uses private field formals (e.g. `super.all` forwarding to `this._all`)
+- Strip leading underscores from private field-formal names in generated `create` factory methods and constructor calls (e.g. `this._offset` → `offset:`)
+
 # 0.9.1 | 3.18.2026
 
 ## Features

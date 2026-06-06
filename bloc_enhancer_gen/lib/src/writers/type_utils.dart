@@ -33,21 +33,17 @@ Expression genericConstructorInvocation({
     final access = namedConstructorName == null || namedConstructorName.isEmpty
         ? className
         : '$className.$namedConstructorName';
-    return refer(access).newInstance(
-      positionalArguments,
-      namedArguments,
-      const [],
-    );
+    return refer(
+      access,
+    ).newInstance(positionalArguments, namedArguments, const []);
   }
-  final target = TypeReference((b) => b
-    ..symbol = className
-    ..types.addAll(typeArguments));
+  final target = TypeReference(
+    (b) => b
+      ..symbol = className
+      ..types.addAll(typeArguments),
+  );
   if (namedConstructorName == null || namedConstructorName.isEmpty) {
-    return target.newInstance(
-      positionalArguments,
-      namedArguments,
-      const [],
-    );
+    return target.newInstance(positionalArguments, namedArguments, const []);
   }
   return target.newInstanceNamed(
     namedConstructorName,
@@ -103,7 +99,8 @@ Reference typeToReference(
   Set<String> inScopeTypeParams = const {},
 }) {
   if (type is TypeParameterType) {
-    if (type.element.name case final name? when inScopeTypeParams.contains(name)) {
+    if (type.element.name case final name?
+        when inScopeTypeParams.contains(name)) {
       return refer(name);
     }
     final bound = type.bound;
