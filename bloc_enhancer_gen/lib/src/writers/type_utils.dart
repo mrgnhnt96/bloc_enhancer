@@ -57,6 +57,44 @@ Expression genericConstructorInvocation({
   );
 }
 
+String publicParameterName(FormalParameterElement parameter) {
+  final name = parameter.name ?? '';
+  if (name == 'new') {
+    return '';
+  }
+
+  return parameter.isNamed || parameter.isSuperFormal
+      ? name.replaceAll(RegExp('^_+'), '')
+      : name;
+}
+
+/// Super formals like `super.all` can report [dynamic] when the super
+/// constructor uses a private field formal (`this._all`) — the analyzer does
+/// not always link [SuperFormalParameterElement.superConstructorParameter].
+DartType parameterElementType(FormalParameterElement parameter) {
+  if (parameter is SuperFormalParameterElement) {
+    final linked = parameter.superConstructorParameter;
+    if (linked != null) {
+      return linked.type;
+    }
+
+    final ctor = parameter.enclosingElement;
+    final publicName = parameter.name;
+    if (ctor is ConstructorElement && publicName != null) {
+      final superCtor = ctor.superConstructor;
+      if (superCtor != null) {
+        for (final parentParam in superCtor.formalParameters) {
+          if (publicParameterName(parentParam) == publicName) {
+            return parentParam.type;
+          }
+        }
+      }
+    }
+  }
+
+  return parameter.type;
+}
+
 /// Raw [refer(type)] fails for type params — e.g. `E` is not in scope in the
 /// generated `.g.dart` file. If we propagate the type param to the method
 /// ([inScopeTypeParams]), use it; otherwise substitute the bound.
@@ -75,6 +113,16 @@ Reference typeToReference(
     return refer(bound.getDisplayString());
   }
   return refer(type.getDisplayString());
+}
+
+Reference parameterTypeReference(
+  FormalParameterElement parameter, {
+  Set<String> inScopeTypeParams = const {},
+}) {
+  return typeToReference(
+    parameterElementType(parameter),
+    inScopeTypeParams: inScopeTypeParams,
+  );
 }
 
 /// Method must declare the type param so it's in scope for parameter types.

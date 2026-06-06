@@ -75,29 +75,34 @@ class WriteFactory {
         if (tp.name case final name? when name.isNotEmpty) name,
     };
 
-    Parameter param(FormalParameterElement p, [bool? isRequired]) {
-      return Parameter((b) {
-        b
-          ..name = p.name ?? ''
-          ..named = p.isNamed
-          ..defaultTo = switch (p.defaultValueCode) {
-              final code? => Code(code),
-              _ => null,
-            }
-          ..type = typeToReference(p.type, inScopeTypeParams: inScopeNames);
-
-        if (isRequired != null) {
-          b.required = isRequired;
-        }
-      });
-    }
-
     String removePrivate(String name) {
       if (name == 'new') {
         return '';
       }
 
       return name.replaceAll(RegExp('^_+'), '');
+    }
+
+    String parameterName(FormalParameterElement p) {
+      final name = p.name ?? '';
+      return p.isNamed ? removePrivate(name) : name;
+    }
+
+    Parameter param(FormalParameterElement p, [bool? isRequired]) {
+      return Parameter((b) {
+        b
+          ..name = parameterName(p)
+          ..named = p.isNamed
+          ..defaultTo = switch (p.defaultValueCode) {
+              final code? => Code(code),
+              _ => null,
+            }
+          ..type = parameterTypeReference(p, inScopeTypeParams: inScopeNames);
+
+        if (isRequired != null) {
+          b.required = isRequired;
+        }
+      });
     }
 
     final typeArgs = [
@@ -162,7 +167,7 @@ class WriteFactory {
                 .map((p) => refer(p.name ?? '')),
             namedArguments: {
               for (final p in ctor.formalParameters.where((p) => p.isNamed))
-                p.name ?? '': refer(p.name ?? ''),
+                parameterName(p): refer(parameterName(p)),
             },
             typeArguments: typeArgs,
           ).code,
