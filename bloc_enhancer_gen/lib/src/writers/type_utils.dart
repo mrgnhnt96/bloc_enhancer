@@ -59,7 +59,7 @@ String publicParameterName(FormalParameterElement parameter) {
     return '';
   }
 
-  return parameter.isNamed || parameter.isSuperFormal
+  return parameter.isNamed || parameter is SuperFormalParameterElement
       ? name.replaceAll(RegExp('^_+'), '')
       : name;
 }

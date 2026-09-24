@@ -1,3 +1,14 @@
+# 0.9.3 | 9.24.2026
+
+## Chore
+
+- Update analyzer constraint to `>=8.0.0 <15.0.0`
+  - Unblocks `build_runner` 2.16 and `auto_route_generator` 10.6, which require analyzer 12+
+
+## Fixes
+
+- Replace `FormalParameterElement.isSuperFormal` (removed in analyzer 14) with a `SuperFormalParameterElement` type check
+
 # 0.9.2 | 6.6.2026
 
 ## Fixes
